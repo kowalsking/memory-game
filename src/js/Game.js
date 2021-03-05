@@ -1,28 +1,48 @@
 import Card from './Card.js'
 
 export default class Game {
+  root = document.querySelector('#root')
+  canvas = document.createElement('canvas')
+
   constructor() {
     this.IMAGES_AMOUNT = 8
-    this.names
+    this.names = []
+    this.cards = []
 
-    this.canvas = this.createCanvas()
-    this.ctx = this.getContext()
+    for (let i = 1; i <= this.IMAGES_AMOUNT * 2; i++) {
+      this.names.push(i)
+    }
+
+    this.createCanvas()
+    this.getContext()
     this.fillBackground()
-    this.createCards()
     this.drawGrid()
+    this.drawCards()
+
+    this.canvas.addEventListener('click', e => {
+      const offsetLeft = this.canvas.offsetLeft
+      const offsetTop = this.canvas.offsetTop
+      const xVal = e.pageX - offsetLeft
+      const yVal = e.pageY - offsetTop
+      // const el = this.cards[0]
+      this.cards.forEach(el => {
+      // console.log(xVal >= el.left && xVal <= el.left + el.width && yVal >= el.top && yVal <= el.top + el.height)
+        if (xVal >= el.left && xVal <= el.left + el.width && yVal >= el.top && yVal <= el.top + el.height) {
+          console.log(el)
+        }
+      })
+    })
   }
 
   createCanvas() {
-    const root = document.querySelector('#root')
-    const canvas = document.createElement('canvas')
-    canvas.width = window.innerWidth / 1.25
-    canvas.height = window.innerHeight / 1.25
-    root.append(canvas)
-    return canvas
+    this.canvas.width = window.innerWidth / 1.25
+    this.canvas.height = window.innerHeight / 1.25
+    this.root.append(this.canvas)
+    return this.canvas
   }
 
   getContext() {
-    return this.ctx = this.canvas.getContext('2d')
+    this.ctx = this.canvas.getContext('2d')
   }
 
   fillBackground() {
@@ -30,44 +50,37 @@ export default class Game {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
   }
 
-  createCards() {
-    for (let i = 0; i < this.IMAGES_AMOUNT; i++) {
-      
-    }
-  }
-
   drawGrid() {
     const w = this.canvas.width
     const h = this.canvas.height
-    let name = 0
     for (let i = 0; i < this.IMAGES_AMOUNT / 2; i++) {
       for (let j = 0; j < this.IMAGES_AMOUNT / 2; j++) {
-        const x = (w / 4) * i + 90
-        const y = (h / 4) * j + 20
+        const left = (w / 4) * i + 90
+        const top = (h / 4) * j + 20
         const width = w / 8
         const height = h / 5
-        this.ctx.fillStyle = 'black'
-        this.ctx.fillRect(x, y, width, height)
-        console.log(this.getRandomImage())
-        name = name++ < 8 ? name : this.getRandomImage()
-        this.drawCard({ name, open:  false, x, y, width, height })
+        this.cards.push({ left, top, width, height })
       }
     }
   }
 
-  drawCard(options) {
-    const { name, x, y, width, height } = options
-    const card = new Image()
-    card.src = `src/img/${name}.jpg`
-    card.addEventListener("load", () => {
-      this.ctx.drawImage(card, x, y, width, height)
-    });
+  drawCards() {
+    console.log(this.cards)
+    this.cards.forEach(c => {
+      const card = new Image()
+      const [name] = this.randomImage()
+      card.src = `src/img/${name}.jpg`
+      c.id = name
+      this.ctx.fillStyle = 'black'
+      this.ctx.fillRect(c.left, c.top, c.width, c.height)
+      card.addEventListener("load", () => {
+        this.ctx.drawImage(card, c.left, c.top, c.width, c.height)
+      })
+    })
   }
 
-  getRandomImage() {
-    this.n = []
-    const name = Math.round(Math.random() * (this.n.length + 2))
-    this.n.find(el => name === el) ? Math.round(Math.random() * this.n.length) : this.n.push(name)
-    return name
+  randomImage() {
+    const random = this.names.sort(() => 0.5 - Math.random()).splice(1, 1)
+    return  random.length === 0 ? this.names : random
   }
 }
