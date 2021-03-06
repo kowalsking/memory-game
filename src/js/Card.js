@@ -1,20 +1,30 @@
 export default class Card {
-  constructor({name, open, x, y, width, height}) {
-    this.name = name
-    this.open = open
-    this.x = x
-    this.y = y
+  constructor({ left, top, width, height }) {
+    this.names = []
+    this.IMAGES_AMOUNT = 8
+
+    for (let i = 1; i <= this.IMAGES_AMOUNT * 2; i++) {
+      this.names.push(i)
+    }
+
+    this.open = false
+    this.left = left
+    this.top = top
     this.width = width
     this.height = height
+    this.img = new Image()
+    const [name] = this.randomImage() // Rewrite logic of random image
+    this.img.src = `src/img/${name}.jpg`
+    this.id = name
+    return this
+  }
 
+  toggleOppenning (open) {
+    this.open = !open
+  }
 
-    return {
-      name: this.name,
-      open: this.open,
-      x: this.x,
-      y: this.y,
-      width: this.width,
-      height: this.height
-    }
+  randomImage() {
+    const random = this.names.sort(() => 0.5 - Math.random()).splice(1, 1)
+    return  random.length === 0 ? this.names : random
   }
 }

@@ -3,35 +3,21 @@ import Card from './Card.js'
 export default class Game {
   root = document.querySelector('#root')
   canvas = document.createElement('canvas')
+  cards = []
+  IMAGES_AMOUNT = 8
 
   constructor() {
-    this.IMAGES_AMOUNT = 8
-    this.names = []
-    this.cards = []
+    this.init()
 
-    for (let i = 1; i <= this.IMAGES_AMOUNT * 2; i++) {
-      this.names.push(i)
-    }
+  }
 
+  init() {
     this.createCanvas()
     this.getContext()
     this.fillBackground()
     this.drawGrid()
-    this.drawCards()
-
-    this.canvas.addEventListener('click', e => {
-      const offsetLeft = this.canvas.offsetLeft
-      const offsetTop = this.canvas.offsetTop
-      const xVal = e.pageX - offsetLeft
-      const yVal = e.pageY - offsetTop
-      // const el = this.cards[0]
-      this.cards.forEach(el => {
-      // console.log(xVal >= el.left && xVal <= el.left + el.width && yVal >= el.top && yVal <= el.top + el.height)
-        if (xVal >= el.left && xVal <= el.left + el.width && yVal >= el.top && yVal <= el.top + el.height) {
-          console.log(el)
-        }
-      })
-    })
+    this.createCards()
+    this.handleEvents()
   }
 
   createCanvas() {
@@ -59,28 +45,36 @@ export default class Game {
         const top = (h / 4) * j + 20
         const width = w / 8
         const height = h / 5
+        
+        this.ctx.fillStyle = 'black'
+        this.ctx.fillRect(left, top, width, height)
         this.cards.push({ left, top, width, height })
       }
     }
   }
 
-  drawCards() {
-    console.log(this.cards)
-    this.cards.forEach(c => {
-      const card = new Image()
-      const [name] = this.randomImage()
-      card.src = `src/img/${name}.jpg`
-      c.id = name
-      this.ctx.fillStyle = 'black'
-      this.ctx.fillRect(c.left, c.top, c.width, c.height)
-      card.addEventListener("load", () => {
-        this.ctx.drawImage(card, c.left, c.top, c.width, c.height)
-      })
-    })
+  createCards() {
+    this.cards = this.cards.map(position => new Card({...position}))
   }
 
-  randomImage() {
-    const random = this.names.sort(() => 0.5 - Math.random()).splice(1, 1)
-    return  random.length === 0 ? this.names : random
+  handleEvents() {
+    this.canvas.addEventListener('click', e => {
+      const offsetLeft = this.canvas.offsetLeft
+      const offsetTop = this.canvas.offsetTop
+      const xVal = e.pageX - offsetLeft
+      const yVal = e.pageY - offsetTop
+      // const el = this.cards[0]
+      this.cards.forEach(el => {
+        const isCard = xVal >= el.left && xVal <= el.left + el.width && yVal >= el.top && yVal <= el.top + el.height
+        if (isCard) {
+          el.toggleOppenning(el.open)
+          if (el.open) {
+            this.ctx.drawImage(el.img, el.left, el.top, el.width, el.height)
+          } else {
+            this.ctx.fillRect(el.left, el.top, el.width, el.height)
+          }
+        }
+      })
+    })
   }
 }
