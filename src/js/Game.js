@@ -63,7 +63,7 @@ export default class Game {
       const offsetTop = this.canvas.offsetTop
       const xVal = e.pageX - offsetLeft
       const yVal = e.pageY - offsetTop
-      // const el = this.cards[0]
+      
       this.cards.forEach(el => {
         const isCard = xVal >= el.left && xVal <= el.left + el.width && yVal >= el.top && yVal <= el.top + el.height
         if (isCard) {
