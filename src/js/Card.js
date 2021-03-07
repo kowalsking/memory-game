@@ -1,12 +1,13 @@
 export default class Card {
-  constructor({ left, top, width, height }) {
+  constructor(position) {
     this.names = []
     this.IMAGES_AMOUNT = 8
 
     for (let i = 1; i <= this.IMAGES_AMOUNT * 2; i++) {
       this.names.push(i)
     }
-
+    this.position = position
+    const { left, top, width, height } = this.position
     this.open = false
     this.left = left
     this.top = top

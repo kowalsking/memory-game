@@ -5,10 +5,13 @@ export default class Game {
   canvas = document.createElement('canvas')
   cards = []
   IMAGES_AMOUNT = 8
+  state = {
+    lastCard: null,
+    openCards: []
+  }
 
   constructor() {
     this.init()
-
   }
 
   init() {
@@ -54,7 +57,7 @@ export default class Game {
   }
 
   createCards() {
-    this.cards = this.cards.map(position => new Card({...position}))
+    this.cards = this.cards.map(position => new Card(position))
   }
 
   handleEvents() {
@@ -63,13 +66,27 @@ export default class Game {
       const offsetTop = this.canvas.offsetTop
       const xVal = e.pageX - offsetLeft
       const yVal = e.pageY - offsetTop
-      
+
       this.cards.forEach(el => {
         const isCard = xVal >= el.left && xVal <= el.left + el.width && yVal >= el.top && yVal <= el.top + el.height
         if (isCard) {
           el.toggleOppenning(el.open)
           if (el.open) {
             this.ctx.drawImage(el.img, el.left, el.top, el.width, el.height)
+            if (this.state.lastCard !== null) {
+              const open = Math.abs(this.state.lastCard.id - el.id) === 8 || this.state.lastCard.id === el.id
+              if (open) {
+                this.state.lastCard = null
+              } else {
+                setTimeout(() => {
+                  this.ctx.fillRect(el.left, el.top, el.width, el.height)
+                  this.ctx.fillRect(this.state.lastCard.left, this.state.lastCard.top, this.state.lastCard.width, this.state.lastCard.height)
+                }, 1000)
+              }
+              console.log('lastId', this.state.lastCard.id)
+              console.log('elId', el.id)
+            }
+            this.state.lastCard = el          
           } else {
             this.ctx.fillRect(el.left, el.top, el.width, el.height)
           }
