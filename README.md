@@ -1,0 +1,1 @@
+Better to use LiveServer. Enjoy ;)
