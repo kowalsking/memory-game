@@ -1,31 +1,31 @@
+  const names = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8]
+  
 export default class Card {
-  constructor(position) {
-    this.names = []
-    this.IMAGES_AMOUNT = 8
+  img = new Image()
+  id = this.randomImage() // how to do it better?
 
-    for (let i = 1; i <= this.IMAGES_AMOUNT * 2; i++) {
-      this.names.push(i)
-    }
-    this.position = position
-    const { left, top, width, height } = this.position
-    this.open = false
+  constructor(position, ctx) {
+    const { left, top, width, height } = position
+    this.ctx = ctx
     this.left = left
     this.top = top
     this.width = width
     this.height = height
-    this.img = new Image()
-    const [name] = this.randomImage() // Rewrite logic of random image
-    this.img.src = `src/img/${name}.jpg`
-    this.id = name
-    return this
+    this.img.src = `src/img/${this.id}.jpg`
+    this.open(false)
   }
-
-  toggleOppenning (open) {
-    this.open = !open
+  
+  open (value = true) {
+    if (value) {
+      this.ctx.drawImage(this.img, this.left, this.top, this.width, this.height)      
+    } else {
+      this.ctx.fillStyle = 'black'
+      this.ctx.fillRect(this.left, this.top, this.width, this.height)
+    }
   }
 
   randomImage() {
-    const random = this.names.sort(() => 0.5 - Math.random()).splice(1, 1)
-    return  random.length === 0 ? this.names : random
+    names.sort(() => 0.5 - Math.random())
+    return names.pop()
   }
 }
